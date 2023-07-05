@@ -1,0 +1,18 @@
+# /.eslintignore
+
+node_modules
+/public
+/docs
+/src/assets
+/dist
+/bin
+/build
+.idea
+.vscode
+*.sh
+*.md
+*.woff
+*.ttf
+.husky
+.local
+/**/*.d.ts

@@ -19,5 +19,174 @@ git checkout -b step-by-step
 npm install
 ```
 
-![][https://czmdi.cooperzhu.com/technology/vue/vite3%20%2B%20vue3%20%2B%20element-plus%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAStep%20by%20Step/2_1.png]
+![](https://czmdi.cooperzhu.com/technology/vue/vite3%2Bvue3%2Belement-plus%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAStep-by-Step/2_1.png)
 
+# 3 代码规范ESLint + Prettier
+
+## 3.1 ESLint
+
+### 3.1.1 安装
+
+``` powershell
+# eslint
+npm install eslint --save-dev
+npm init @eslint/config
+```
+![](https://czmdi.cooperzhu.com/technology/vue/vite3%2Bvue3%2Belement-plus%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAStep-by-Step/3-1-1_1.png)
+
+最终eslint配置
+![](https://czmdi.cooperzhu.com/technology//vue/vite3%2Bvue3%2Belement-plus%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAStep-by-Step/3-1-1_2.png)
+
+### 3.1.2 配置
+
+- 修改eslint配置文件
+
+```typescript
+// /.eslintrc.cjs
+// 全部替换
+
+module.exports = {
+  root: true,
+  env: {
+    browser: true,
+    es2021: true,
+    node: true,
+  },
+  extends: [
+    'eslint:recommended',
+    'plugin:vue/vue3-essential',
+    'plugin:@typescript-eslint/recommended',
+    // 添加下面这行会与prettier产生冲突
+    //'plugin:prettier/recommended', // prettier必须为最后一行，才能进行覆盖
+  ],
+  overrides: [],
+  parser: 'vue-eslint-parser',
+  parserOptions: {
+    ecmaVersion: 'latest',
+    sourceType: 'module',
+    parser: '@typescript-eslint/parser',
+  },
+  plugins: ['vue', '@typescript-eslint'],
+  rules: {
+    'vue/multi-word-component-names': 'off',
+    '@typescript-eslint/no-explicit-any': 'off', // 关闭any类型警告
+  },
+  globals: {
+    defineProps: 'readonly',
+    defineEmits: 'readonly',
+    defineExpose: 'readonly',
+    withDefaults: 'readonly',
+  },
+};
+```
+
+- 新建eslint忽略文件
+
+```ini
+# /.eslintignore
+
+node_modules
+/public
+/docs
+/src/assets
+/dist
+/bin
+/build
+.idea
+.vscode
+*.sh
+*.md
+*.woff
+*.ttf
+.husky
+.local
+/**/*.d.ts
+```
+
+- 修改package.json
+
+```json
+// 添加
+{
+  "scripts": {
+    "lint": "eslint --fix src/**/*.{ts,js,cjs,vue}",
+  },
+}
+```
+
+## 3.2 prettier
+
+### 3.2.1 安装
+
+``` powershell
+# prettier
+npm install prettier eslint-plugin-prettier eslint-config-prettier --save-dev
+
+# lint-staged
+# npm install lint-staged
+```
+
+### 3.2.2 配置
+
+- 新建prettier配置文件
+
+```json
+// /.prettierrc.cjs
+
+/**
+ * 格式化配置
+ */
+module.exports = {
+  useTabs: false, // 是否使用tab
+  tabWidth: 2, // 每个tab的空格数
+  semi: true, // 语句末尾是否添加分号
+  singleQuote: true, // 是否使用单引号
+  endOfLine: 'lf', // 换行符样式：\n(lf)|\r\n(crlf)|\r(cr)：<auto|lf|crlf|cr>
+  printWidth: 180, // 每行最大字符数
+  proseWrap: 'never', // 换行。<always|never|preserve>
+  quoteProps: 'as-needed', //// 更改引用对象属性的时间。可选值"<as-needed|consistent|preserve>"
+  trailingComma: 'all', // 多行时添加尾随逗号规则：<none|es5|all>，默认none
+  bracketSpacing: true, // 是否在对象文字中的括号之间添加空格
+  arrowParens: 'always', // 箭头函数参数周围是否包括括号：always: (x) => x \ avoid: x => x
+  rangeStart: 0, // 格式化字符偏移量（包括和不包括）
+  rangeEnd: Infinity, // 格式化字符偏移量（包括和不包括）
+  requirePragma: false, // 指定要使用的解析器，不需要写文件开头的 @prettier
+  insertPragma: false, // 不需要自动在文件开头插入 @prettier
+  htmlWhitespaceSensitivity: 'css', // 指定HTML文件的全局空格敏感度 <css|strict|ignore>
+  vueIndentScriptAndStyle: false, // Vue文件脚本和样式标签缩进
+};
+```
+
+- 新建prettier忽略文件
+
+```ini
+# /.prettierignore
+
+node_modules
+/public
+/docs
+/src/assets
+/dist
+/bin
+/build
+.idea
+.vscode
+*.sh
+*.md
+*.woff
+*.ttf
+.husky
+.local
+/**/*.d.ts
+```
+
+- 修改package.json
+
+```json
+// 添加
+{
+  "scripts": {
+    "prettier": "prettier --write ."
+  },
+}
+```
