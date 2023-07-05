@@ -239,10 +239,79 @@ export default defineConfig({
 
 ## 4.3 示例
 
-```vue
+```typescript
 // App.vue
 import HelloWorld from '/src/components/HelloWorld.vue'
                         ↓
 import HelloWorld from '@/components/HelloWorld.vue'
 ```
 
+# 5 环境变量
+
+> see：https://cn.vitejs.dev/guide/env-and-mode.html
+
+## 5.1 配置
+
+- 开发环境：`/.env.development`
+
+```properties
+# /.env.development
+# 新建
+  
+## 开发环境
+NODE_ENV='development'
+
+VITE_APP_TITLE = 'cz-vue3-element-plus-admin'
+VITE_APP_PORT = 3000
+VITE_APP_BASE_API = '/dev-api'
+```
+
+- 生产环境：`/.env.production`
+
+```properties
+# /.env.production
+# 新建
+
+## 生产环境
+NODE_ENV='production'
+
+VITE_APP_TITLE = 'cz-vue3-element-plus-admin'
+VITE_APP_PORT = 3000
+VITE_APP_BASE_API = '/prod-api'
+```
+
+- 测试环境：`/.env.test`
+
+```properties
+# /.env.test
+# 新建
+
+## 生产环境
+NODE_ENV='test'
+
+VITE_APP_TITLE = 'cz-vue3-element-plus-admin'
+VITE_APP_PORT = 3000
+VITE_APP_BASE_API = '/test-api'
+```
+
+## 5.2 IDE自动提示
+
+```typescript
+// /src/vite-env.d.ts
+// 添加
+
+// 环境变量类型
+interface ImportMetaEnv {
+  VITE_APP_TITLE: string,
+  VITE_APP_PORT: string,
+  VITE_APP_BASE_API: string
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv
+}
+```
+
+## 5.3 示例
+
+![](https://czmdi.cooperzhu.com/technology//vue/vite3%2Bvue3%2Belement-plus%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAStep-by-Step/5-3_1.png)
