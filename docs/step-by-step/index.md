@@ -520,3 +520,393 @@ import Testing from '@/views/testing/index.vue';
 
 ![](https://czmdi.cooperzhu.com/technology//vue/vite3%2Bvue3%2Belement-plus%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAStep-by-Step/6-2_1.png)
 
+# 7 国际化i18n
+
+> see: https://kazupon.github.io/vue-i18n/zh/introduction.html
+
+## 7.1 安装
+
+```shell
+npm install vue-i18n
+npm install lodash-es
+npm install @types/lodash-es
+```
+
+## 7.2 配置
+
+- vite.config.ts
+
+```typescript
+// vite.config.ts
+// 添加
+
+export default defineConfig({
+  resolve: {
+    alias: {
+      'vue-i18n': 'vue-i18n/dist/vue-i18n.cjs.js',
+    },
+  },
+});
+```
+
+- 支持的语言类型`LocaleTypes.ts`
+
+```typescript
+// /src/locales/LocaleTypes.ts
+
+export enum LocaleType {
+  zhCN = 'zh-CN',
+  enUS = 'en-US',
+}
+```
+
+- 语言工具类`LocaleHelper.ts`
+
+```typescript
+// /src/locales/LocaleHelper.ts
+
+import { set } from 'lodash-es';
+import { LocaleType } from './LocaleTypes';
+
+declare type Recordable<T = any> = Record<string, T>;
+const loadLocalePool: LocaleType[] = [];
+
+function setHtmlPageLang(locale: LocaleType) {
+  document.querySelector('html')?.setAttribute('lang', locale);
+}
+
+function setLoadLocalePool(cb: (loadLocalePool: LocaleType[]) => void) {
+  cb(loadLocalePool);
+}
+
+function buildMessage(langs: Record<string, Record<string, any>>, prefix = 'lang') {
+  const obj: Recordable = {};
+
+  Object.keys(langs).forEach((key) => {
+    const langFileModule = langs[key].default;
+    let fileName = key.replace(`./${prefix}/`, '').replace(/^\.\//, '');
+    const lastIndex = fileName.lastIndexOf('.');
+    fileName = fileName.substring(0, lastIndex);
+    const keyList = fileName.split('/');
+    const moduleName = keyList.shift();
+    const objKey = keyList.join('.');
+
+    if (moduleName) {
+      if (objKey) {
+        set(obj, moduleName, obj[moduleName] || {});
+        set(obj[moduleName], objKey, langFileModule);
+      } else {
+        set(obj, moduleName, langFileModule || {});
+      }
+    }
+  });
+  return obj;
+}
+
+const LocaleHelper = {
+  setHtmlPageLang,
+  setLoadLocalePool,
+  buildMessage,
+};
+
+export default LocaleHelper;
+```
+
+- LocaleService
+
+```typescript
+// /src/locales/LocaleService.ts
+
+import { App } from 'vue';
+import type { I18nOptions } from 'vue-i18n';
+
+import { createI18n } from 'vue-i18n';
+import LocaleHelper from './LocaleHelper';
+import { LocaleType } from './LocaleTypes';
+import LocalStorageUtil from '@/utils/storage/LocalStorageUtil';
+
+const defaultLocale = LocaleType.zhCN;
+const availableLocales = [LocaleType.zhCN, LocaleType.enUS];
+
+/**
+ * 获取用户语言设置
+ *
+ * @returns 如果LocalStorage有保存语言设置，则返回；
+ * 否则尝试返回浏览器使用语言设置；
+ * 若尝试失败，则返回简体中文
+ */
+const getLocale = (): LocaleType => {
+  const language = LocalStorageUtil.get<LocaleType>('app.locale');
+  if (language) {
+    return language;
+  }
+
+  // 浏览器使用语言
+  const browser = navigator.language.toLowerCase();
+  const locales = Object.values(LocaleType);
+  for (const locale of locales) {
+    if (browser.indexOf(locale) > -1) {
+      return locale;
+    }
+  }
+
+  return defaultLocale;
+};
+
+const currentLocale = getLocale();
+LocaleHelper.setHtmlPageLang(currentLocale);
+LocaleHelper.setLoadLocalePool((pool) => {
+  pool.push(currentLocale);
+});
+
+async function createI18nOptions(): Promise<I18nOptions> {
+  const localFile = await import(`./lang/${currentLocale}.ts`);
+  const message = localFile.default?.message ?? {};
+
+  return {
+    legacy: false,
+    locale: currentLocale,
+    fallbackLocale: defaultLocale,
+    messages: {
+      [currentLocale]: message,
+    },
+    globalInjection: true,
+    availableLocales: availableLocales,
+    sync: true,
+    missingWarn: false,
+    silentTranslationWarn: true, // true - warning off
+    silentFallbackWarn: true,
+  };
+}
+
+const i18n = createI18n(await createI18nOptions());
+const t = i18n.global.t;
+
+async function setupI18n(app: App) {
+  app.use(i18n);
+}
+
+function setI18nLanguage(locale: LocaleType) {
+  if (i18n.mode === 'legacy') {
+    i18n.global.locale = locale;
+  } else {
+    (i18n.global.locale as any).value = locale;
+  }
+  LocalStorageUtil.set('app.locale', locale);
+  LocaleHelper.setHtmlPageLang(locale);
+}
+
+async function changeLocale(locale: LocaleType): Promise<void> {
+  const globalI18n = i18n.global;
+  if (globalI18n.availableLocales.includes(locale)) {
+    setI18nLanguage(locale);
+    return;
+  }
+
+  const localFile = await import(`./lang/${locale}.ts`);
+  if (!localFile) {
+    return;
+  }
+  const message = localFile.default?.message ?? {};
+  globalI18n.setLocaleMessage(locale, message);
+  setI18nLanguage(locale);
+}
+
+const LocaleService = {
+  setupI18n,
+  i18n,
+  t,
+  getLocale,
+  changeLocale,
+};
+
+export default LocaleService;
+```
+
+**如果`import { createI18n } from 'vue-i18n';`报错，请将`tsconfig.json`中的`moduleResolution`值由`bundler`改成`Node`**
+
+![](https://czmdi.cooperzhu.com/technology/vue/vite3%2Bvue3%2Belement-plus%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAStep-by-Step/7-2_1.png)
+
+![](https://czmdi.cooperzhu.com/technology/vue/vite3%2Bvue3%2Belement-plus%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAStep-by-Step/7-2_2.png)
+
+- 全局注册
+
+```typescript
+// /src/main.ts
+// 添加
+
+import LocaleService from '@/locales/LocaleService';
+
+async function bootstrap() {
+  const app = createApp(App);
+
+  await LocaleService.setupI18n(app);
+
+  app.mount('#app');
+}
+
+bootstrap();
+```
+
+## 7.3 使用步骤
+
+![](https://czmdi.cooperzhu.com/technology/vue/vite3%2Bvue3%2Belement-plus%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAStep-by-Step/7-3_1.png)
+
+## 7.4 示例
+
+### 7.4.1 英语
+
+#### 7.4.1.1 添加支持的语言类型`en-US`
+
+```typescript
+// /src/locales/LocaleTypes.ts
+
+export enum LocaleType {
+  zhCN = 'zh-CN',
+  enUS = 'en-US',
+}
+```
+
+#### 7.4.1.2 国际化解析文件`en-US.ts`
+
+```typescript
+// /src/locales/lang/en-US.ts
+
+import LocaleHelper from '../LocaleHelper';
+import { LocaleType } from '../LocaleTypes';
+
+const modules = import.meta.glob<true, string, Record<string, any>>('./en-US/**/*.ts', { eager: true });
+export default {
+  message: {
+    ...LocaleHelper.buildMessage(modules, LocaleType.enUS),
+  },
+  locale: null,
+  localeName: LocaleType.enUS,
+};
+```
+
+#### 7.4.1.3 不带子目录国际化文件示例
+
+```typescript
+// /src/locales/lang/en-US/global.ts
+
+export default {
+  // 全局
+  global: {
+    appName: 'cz-vue3-element-plus-admin',
+    versionTitle: 'version',
+    copyright: 'Shenzhen XXX Ltd.',
+  },
+};
+```
+
+#### 7.4.1.4 带子目录路径的国际化文件示例
+
+```typescript
+// /src/locales/lang/en-US/routes/router.ts
+
+export default {
+  system: {
+    userManagement: 'User Management',
+  },
+  login: 'Login',
+  errorLog: 'Error Log',
+};
+```
+
+### 7.4.2 中文
+
+#### 7.4.2.1 添加支持的语言类型`zh-CN`
+
+```typescript
+// /src/locales/LocaleTypes.ts
+
+export enum LocaleType {
+  zhCN = 'zh-CN',
+  enUS = 'en-US',
+}
+```
+
+#### 7.4.2.2 国际化解析文件`zh-CN.ts`
+
+```typescript
+// /src/locales/lang/zh-CN.ts
+
+import LocaleHelper from '../LocaleHelper';
+import { LocaleType } from '../LocaleTypes';
+
+const modules = import.meta.glob<true, string, Record<string, any>>('./zh-CN/**/*.ts', { eager: true });
+
+export default {
+  message: {
+    ...LocaleHelper.buildMessage(modules, LocaleType.zhCN),
+  },
+  locale: null,
+  localeName: LocaleType.zhCN,
+};
+```
+
+#### 7.4.2.3 不带子目录国际化文件示例
+
+```typescript
+// /src/locales/lang/zh-CN/global.ts
+
+export default {
+  // 全局
+  global: {
+    appName: 'cz-vue3-element-plus-admin',
+    versionTitle: '版本',
+    copyright: '深圳 XXX 有限公司',
+  },
+};
+```
+
+#### 7.4.2.4 带子目录路径的国际化文件示例
+
+```typescript
+// /src/locales/lang/zh-CN/routes/router.ts
+
+export default {
+  system: {
+    userManagement: '用户管理',
+  },
+  login: '登录',
+  errorLog: '错误日志',
+};
+```
+
+### 7.4.3 调用示例
+
+```vue
+// /src/views/testing/index.vue
+// 添加
+
+<template>
+  <h3>国际化</h3>
+  <button @click="changeLocaleHandler('zh-CN')">中文</button>
+  <button @click="changeLocaleHandler('en-US')">English</button>
+  <ul>
+    <li>{{ $t('global.global.copyright') }}</li>
+    <li>{{ $t('routes.router.system.userManagement') }}</li>
+    <li>{{ $t('routes.router.login') }}</li>
+  </ul>
+</template>
+
+<script setup lang="ts">
+import LocaleService from '@/locales/LocaleService';
+import { LocaleType } from '@/locales/LocaleTypes';
+
+
+function changeLocaleHandler(val: string) {
+  switch (val) {
+    case 'zh-CN':
+      LocaleService.changeLocale(LocaleType.zhCN);
+      break;
+    case 'en-US':
+      LocaleService.changeLocale(LocaleType.enUS);
+      break;
+  }
+}
+</script>
+```
+

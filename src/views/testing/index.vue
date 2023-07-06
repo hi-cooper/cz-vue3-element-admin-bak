@@ -1,9 +1,20 @@
 <template>
   <button @click="testLocalStorageHandler">Test localStorage</button>
+
+  <h3>国际化</h3>
+  <button @click="changeLocaleHandler('zh-CN')">中文</button>
+  <button @click="changeLocaleHandler('en-US')">English</button>
+  <ul>
+    <li>{{ $t('global.global.copyright') }}</li>
+    <li>{{ $t('routes.router.system.userManagement') }}</li>
+    <li>{{ $t('routes.router.login') }}</li>
+  </ul>
 </template>
 
 <script setup lang="ts">
 import LocalStorageUtil from '@/utils/storage/LocalStorageUtil';
+import LocaleService from '@/locales/LocaleService';
+import { LocaleType } from '@/locales/LocaleTypes';
 
 function testLocalStorageHandler() {
   console.log('\n============================begin test LocalStorage============================');
@@ -34,5 +45,16 @@ function testLocalStorageHandler() {
   cacheSettingTmp = LocalStorageUtil.get<ICacheSetting>(keyCacheSetting);
   console.log('KEY_CacheSetting', cacheSettingTmp);
   console.log('============================end test LocalStorage============================');
+}
+
+function changeLocaleHandler(val: string) {
+  switch (val) {
+    case 'zh-CN':
+      LocaleService.changeLocale(LocaleType.zhCN);
+      break;
+    case 'en-US':
+      LocaleService.changeLocale(LocaleType.enUS);
+      break;
+  }
 }
 </script>
