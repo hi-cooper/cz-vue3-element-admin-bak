@@ -1078,3 +1078,185 @@ function testStoreHandler() {
 
 ![](https://czmdi.cooperzhu.com/technology/vue/vite3%2Bvue3%2Belement-plus%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAStep-by-Step/8-4-4_1.png)
 
+# 9 路由router
+
+> see: https://router.vuejs.org/zh/
+
+## 9.1 安装
+
+```shell
+npm install vue-router
+```
+
+## 9.2 配置
+
+- RouterService.ts
+
+```typescript
+// /src/router/RouterService.ts
+// 新建
+
+import type { RouteRecordRaw } from 'vue-router';
+import type { App } from 'vue';
+import { createRouter, createWebHashHistory } from 'vue-router';
+
+const constantRoutes: Array<RouteRecordRaw> = [
+    // 将路由配置添加到此处
+];
+const router = createRouter({
+  routes: constantRoutes as RouteRecordRaw[],
+  history: createWebHashHistory(),
+  scrollBehavior: () => ({ left: 0, top: 0 }), // 刷新时，还原滚动条位置
+});
+
+function setup(app: App<Element>) {
+  app.use(router);
+}
+
+const RouterService = {
+  router,
+  setup,
+};
+
+export default RouterService;
+```
+
+- 全局注册
+
+```typescript
+// /src/main.ts
+// 添加
+
+import RouterService from '@/router/RouterService';
+
+async function bootstrap() {
+  RouterService.setup(app);
+}
+```
+
+## 9.3 示例
+
+### 9.3.1 路由测试页
+
+```vue
+// /src/App.vue
+// 添加以下内容，并删除<HelloWorld />等无关内容
+
+<template>
+  <div>
+    <p>
+      <RouterLink to="/login">登录 </RouterLink>
+      <RouterLink to="/">首页 </RouterLink>
+      <RouterLink to="/dashboard">dashboard </RouterLink>
+      <RouterLink to="/401">401 </RouterLink>
+      <RouterLink to="/500">500 </RouterLink>
+    </p>
+  </div>
+  <RouterView />
+</template>
+```
+
+### 9.3.2 创建路由页面
+
+- login
+
+```vue
+// /src/views/login/index.vue
+// 新建
+
+<template>
+  <form method="get" @submit.prevent="loginHander">
+    <label for="username">用户名</label>
+    <input type="text" name="username" value="admin" /><br />
+    <label for="password">密码</label>
+    <input type="password" name="password" value="admin" /><br />
+    <button type="submit">登录</button>
+  </form>
+</template>
+
+<script setup lang="ts">
+import RouterService from '@/router/RouterService';
+
+function loginHander() {
+  RouterService.router.replace('/dashboard');
+}
+</script>
+```
+
+- dashboard
+
+```vue
+// /src/views/dashboard/index.vue
+// 新建
+
+<template>
+  <h1>Dashboard</h1>
+</template>
+
+<script setup lang="ts"></script>
+
+```
+
+- 401
+
+```vue
+// /src/views/error/401.vue
+// 新建
+
+<template>
+  <h1>401</h1>
+</template>
+```
+
+- 500
+
+```vue
+// /src/views/error/500.vue
+// 新建
+
+<template>
+  <h1>500</h1>
+</template>
+```
+
+### 9.3.3 更新路由配置
+
+```typescript
+// /src/router/RouterService.ts
+// 添加
+
+const constantRoutes: Array<RouteRecordRaw> = [
+  {
+    path: '/',
+    redirect: '/dashboard',
+    children: [
+      {
+        path: 'dashboard',
+        component: () => import('@/views/dashboard/index.vue'),
+        meta: { affix: true },
+      },
+    ],
+  },
+  {
+    path: '/login',
+    component: () => import('@/views/login/index.vue'),
+    meta: { hidden: true },
+  },
+  {
+    path: '/dashboard',
+    component: () => import('@/views/dashboard/index.vue'),
+    meta: { hidden: true },
+  },
+  {
+    path: '/401',
+    component: () => import('@/views/error/401.vue'),
+    meta: { hidden: true },
+  },
+  {
+    path: '/500',
+    component: () => import('@/views/error/500.vue'),
+    meta: { hidden: true },
+  },
+];
+```
+
