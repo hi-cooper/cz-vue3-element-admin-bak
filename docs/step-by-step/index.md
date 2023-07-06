@@ -315,3 +315,208 @@ interface ImportMeta {
 ## 5.3 示例
 
 ![](https://czmdi.cooperzhu.com/technology//vue/vite3%2Bvue3%2Belement-plus%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAStep-by-Step/5-3_1.png)
+
+# 6 本地存储工具类LocalStorageUtil/SessionStorageUtil
+
+## 6.1 封装
+
+- LocalStorageUtil
+
+```typescript
+// /src/utils/storage/LocalStorageUtil.ts
+
+/**
+ * 采用window.localStorage
+ */
+const LocalStorageUtil = {
+  /**
+   * 设置指定key的缓存。<br />
+   * 通过JSON.stringify()转换成string后再存储
+   *
+   * @param key key
+   * @param value value
+   */
+  set<T>(key: string, value: T): void {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  },
+
+  /**
+   * 获取指定key的缓存。
+   *
+   * @param key key
+   * @param defaultValue 默认值
+   * @returns null - 未取到数据<br />
+   * JSON - 取到的JSON的值
+   */
+  get<T>(key: string, defaultValue?: T): T {
+    const value: any = window.localStorage.getItem(key);
+    if (defaultValue && value == null) {
+      this.set(key, defaultValue);
+      return defaultValue;
+    }
+    return JSON.parse(value) as T;
+  },
+
+  /**
+   * 移除指定key的缓存
+   *
+   * @param key key
+   */
+  remove(key: string): void {
+    window.localStorage.removeItem(key);
+  },
+
+  /**
+   * 移除全部缓存
+   */
+  clear(): void {
+    window.localStorage.clear();
+  },
+
+  /**
+   * 获取所有key
+   *
+   * @returns
+   */
+  getAllKeys(): string[] {
+    return Object.keys(window.localStorage);
+  },
+};
+
+export default LocalStorageUtil;
+```
+
+- SessionStorageUtil
+
+```typescript
+// /src/utils/storage/SessionStorageUtil.ts
+
+/**
+ * 采用window.sessionStorage
+ */
+const SessionStorageUtil = {
+  /**
+   * 设置指定key的缓存。<br />
+   * 通过JSON.stringify()转换成string后再存储
+   *
+   * @param key key
+   * @param value value
+   */
+  set<T>(key: string, value: T) : void {
+    window.sessionStorage.setItem(key, JSON.stringify(value));
+  },
+
+  /**
+   * 获取指定key的缓存。
+   *
+   * @param key key
+   * @param defaultValue 默认值
+   * @returns null - 未取到数据<br />
+   * JSON - 取到的JSON的值
+   */
+  get<T>(key: string, defaultValue?: T): T {
+    const value: any = window.sessionStorage.getItem(key);
+    if (defaultValue && value == null) {
+      this.set(key, defaultValue);
+      return defaultValue;
+    }
+    return JSON.parse(value) as T;
+  },
+
+  /**
+   * 移除指定key的缓存
+   *
+   * @param key key
+   */
+  remove(key: string): void {
+    window.sessionStorage.removeItem(key);
+  },
+
+  /**
+   * 移除全部缓存
+   */
+  clear(): void {
+    window.sessionStorage.clear();
+  },
+
+  /**
+   * 获取所有key
+   *
+   * @returns
+   */
+  getAllKeys(): string[] {
+    return Object.keys(window.sessionStorage);
+  },
+};
+
+export default SessionStorageUtil;
+```
+
+## 6.2 示例
+
+### 6.2.1 新建测试页
+
+```vue
+<template>
+  <button @click="testLocalStorageHandler">Test localStorage</button>
+</template>
+
+<script setup lang="ts">
+import LocalStorageUtil from '@/utils/storage/LocalStorageUtil';
+
+function testLocalStorageHandler() {
+  console.log('\n============================begin test LocalStorage============================');
+  LocalStorageUtil.clear();
+  LocalStorageUtil.set('test_a', 'TEST_A');
+  console.log(LocalStorageUtil.get('test_a'));
+  console.log(LocalStorageUtil.get('test_b'));
+  console.log(LocalStorageUtil.get('test_b', 'TEST_B'));
+  console.log(LocalStorageUtil.get('test_b'));
+
+  interface ICacheSetting {
+    keyPrefix: string;
+    enableAes: boolean; // enable cache encryption or not
+    aesKey: string | null; // AES encryption key
+    aesIv: string | null; // AES encryption iv
+  }
+
+  const cacheSetting: ICacheSetting = {
+    keyPrefix: 'cache_',
+    enableAes: true,
+    aesKey: '111111',
+    aesIv: '@111111',
+  };
+  const keyCacheSetting = 'KEY_CacheSetting';
+  let cacheSettingTmp: ICacheSetting = LocalStorageUtil.get<ICacheSetting>(keyCacheSetting);
+  console.log('KEY_CacheSetting', cacheSettingTmp);
+  LocalStorageUtil.set(keyCacheSetting, cacheSetting);
+  cacheSettingTmp = LocalStorageUtil.get<ICacheSetting>(keyCacheSetting);
+  console.log('KEY_CacheSetting', cacheSettingTmp);
+  console.log('============================end test LocalStorage============================');
+}
+</script>
+```
+
+### 6.2.2 引入测试页
+
+同时删除示例中的`/src/components/HelloWorld.vue`等无关组件
+
+```vue
+// /src/App.vue
+// 完全替换（删除无关内容）
+
+<script setup lang="ts">
+import Testing from '@/views/testing/index.vue';
+</script>
+
+<template>
+  <Testing />
+</template>
+
+<style scoped></style>
+```
+
+### 6.2.3 运行结果
+
+![](https://czmdi.cooperzhu.com/technology//vue/vite3%2Bvue3%2Belement-plus%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAStep-by-Step/6-2_1.png)
+
