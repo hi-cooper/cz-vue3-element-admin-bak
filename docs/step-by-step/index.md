@@ -910,3 +910,171 @@ function changeLocaleHandler(val: string) {
 </script>
 ```
 
+# 8 状态管理Pinia
+
+## 8.1 安装
+
+```shell
+npm install pinia
+```
+
+## 8.2 配置
+
+- StoreService.ts
+
+```typescript
+// /src/store/StoreService.ts
+// 新建
+
+import type { App } from 'vue';
+import { createPinia } from 'pinia';
+
+const store = createPinia();
+
+const StoreService = {
+  setup(app: App<Element>) {
+    app.use(store);
+    this._init();
+  },
+
+  _init() {
+    console.log('Store init');
+  },
+};
+
+export default StoreService;
+export { store };
+```
+
+- 全局注册
+
+```typescript
+// /src/main.ts
+// 添加
+
+import StoreService from '@/store/StoreService';
+
+async function bootstrap() {
+  StoreService.setup(app);
+}
+```
+
+## 8.3 使用规则
+
+在`/src/store/module`目录下创建状态管理类，在需要使用的地方import该类进行管理。
+
+## 8.4 示例
+
+以用户状态存储和管理为示例进行说明。
+
+### 8.4.1 在`modules`目录下创建`用户状态管理类userStore.ts`
+
+```typescript
+// /src/store/modules/userStore.ts
+// 新建
+
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
+import { store } from '../StoreService';
+
+const useStore = defineStore('UserStore', () => {
+  // state
+  const openId = ref<string>('user_open_id');
+  const nickname = ref<string>('user_nickname');
+  const avatar = ref<string>('user_avatoar');
+
+  // actions
+  function updateNickname(val: string) {
+    nickname.value = val;
+  }
+
+  return {
+    openId,
+    nickname,
+    avatar,
+    updateNickname,
+  };
+});
+
+const userStoreHook = useStore(store); // 在useStore()前声明，可解决错误：etActivePinia()" was called but there was no active Pinia. Did you forget to install pinia?
+
+export default useStore();
+export { userStoreHook };
+```
+
+### 8.4.2 创建测试页面
+
+```vue
+// /src/views/testing/store.vue
+// 新建
+
+<!-- 正确运行 -->
+<!-- <template>测试Store</template>
+<script setup lang="ts">
+import userStore from '@/store/modules/userStore';
+function testStore() {
+  console.log('\n============================begin test store============================');
+  console.log(userStore.nickname);
+  userStore.updateNickname('NICK_NAME');
+  console.log(userStore.nickname);
+  console.log('============================end test store============================');
+}
+
+testStore();
+</script> -->
+
+<!-- 将文件改成下面代码，正确运行 -->
+<!-- <template>测试Store</template>
+<script lang="ts">
+import { userStoreHook } from '@/store/modules/userStore';
+
+function testStore() {
+  console.log('\n============================begin test store============================');
+  console.log('without setup', userStoreHook.nickname);
+  userStoreHook.updateNickname('NICK_NAME_WITHOUT_SETUP');
+  console.log('without setup', userStoreHook.nickname);
+  console.log('============================end test store============================');
+}
+export default testStore;
+</script> -->
+
+<!-- 将文件改成下面代码，正确运行， -->
+<!-- 因为已在userStore.ts中const userStoreHook = useStore(store);声明在useStore()前。but why? -->
+<template>测试Store</template>
+<script lang="ts">
+import userStore from '@/store/modules/userStore';
+
+function testStore() {
+  console.log('\n============================begin test store============================');
+  console.log('store: without setup', userStore.nickname);
+  userStore.updateNickname('NICK_NAME_WITHOUT_SETUP');
+  console.log('store: without setup', userStore.nickname);
+  console.log('============================end test store============================');
+}
+export default testStore;
+</script>
+```
+
+### 8.4.3 引入测试页面
+
+```vue
+// /src/views/testing/index.vue
+// 添加
+
+<template>
+  <button @click="testStoreHandler">Test Store</button>
+</template>
+
+<script setup lang="ts">
+import testStore from '@/views/testing/store.vue';
+
+function testStoreHandler() {
+  testStore();
+}
+</script>
+```
+
+### 8.4.4 运行结果
+
+![](https://czmdi.cooperzhu.com/technology/vue/vite3%2Bvue3%2Belement-plus%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAStep-by-Step/8-4-4_1.png)
+

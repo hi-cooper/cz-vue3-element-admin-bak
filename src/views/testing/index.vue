@@ -1,5 +1,6 @@
 <template>
   <button @click="testLocalStorageHandler">Test localStorage</button>
+  <button @click="testStoreHandler">Test Store</button>
 
   <h3>国际化</h3>
   <button @click="changeLocaleHandler('zh-CN')">中文</button>
@@ -15,6 +16,7 @@
 import LocalStorageUtil from '@/utils/storage/LocalStorageUtil';
 import LocaleService from '@/locales/LocaleService';
 import { LocaleType } from '@/locales/LocaleTypes';
+import testStore from '@/views/testing/store.vue';
 
 function testLocalStorageHandler() {
   console.log('\n============================begin test LocalStorage============================');
@@ -56,5 +58,9 @@ function changeLocaleHandler(val: string) {
       LocaleService.changeLocale(LocaleType.enUS);
       break;
   }
+}
+
+function testStoreHandler() {
+  testStore();
 }
 </script>
