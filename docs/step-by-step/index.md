@@ -1260,3 +1260,116 @@ const constantRoutes: Array<RouteRecordRaw> = [
 ];
 ```
 
+# 10 路由优化：模拟简单后台管理系统登录效果
+
+> 因涉及文件较多，详见git提交记录
+>
+> 因采用store存储token，所以不支持在登录情况下，刷新页面/地址栏直接访问目标地址等情况下访问目标已授权页面
+>
+> 跨tab页不共享store状态，若需要共享，那么需要使用storage
+
+支持标准的用户登录/登出、布局等
+
+- 环境变量
+
+```typescript
+// /src/vite-env.d.ts
+// 添加
+
+declare module '*.vue' {
+  import type { DefineComponent } from 'vue'
+  const component: DefineComponent<{}, {}, any>
+  export default component
+}
+```
+
+- App.vue
+
+```vue
+// /src/App.vue
+// 完全替换
+
+<script setup lang="ts"></script>
+
+<template>
+  <RouterView />
+</template>
+
+<style scoped></style>
+```
+
+- layout布局文件
+
+```vue
+// /src/layouts/default/index.vue
+// 新建
+
+<template>
+  <div id="header">Header</div>
+  <div id="main">
+    <RouterView />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { RouterView } from 'vue-router';
+</script>
+
+<style scoped>
+html,
+body {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+#header {
+  width: 100%;
+  height: 80px;
+  background-color: aqua;
+}
+#main {
+  width: 100%;
+  height: max-content;
+}
+</style>
+```
+
+- 路由添加`component`属性，值指向`/src/layouts/default/index.vue`
+
+![](https://czmdi.cooperzhu.com/technology/vue/vite3%2Bvue3%2Belement-plus%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAStep-by-Step/10_1.png)
+
+- 登录页
+
+```vue
+// /src/views/login/index.vue
+// 替换<script>内容
+
+<script setup lang="ts">
+import userStore from '@/store/modules/userStore';
+import RouterService from '@/router/RouterService';
+import { RoutePathEnum } from '@/router/RoutePathEnum';
+
+function loginHander() {
+  userStore.updateToken('token_val');
+  RouterService.router.replace(RoutePathEnum.HOME);
+}
+</script>
+```
+
+- dashboard
+
+```vue
+// /src/views/dashboard/index.vue
+// 完全替换
+
+<template>
+  <h1>Dashboard</h1>
+  <Testing />
+</template>
+
+<script setup lang="ts">
+import Testing from '@/views/testing/index.vue';
+</script>
+```
+

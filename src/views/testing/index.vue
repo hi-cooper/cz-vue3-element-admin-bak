@@ -1,6 +1,7 @@
 <template>
   <button @click="testLocalStorageHandler">Test localStorage</button>
   <button @click="testStoreHandler">Test Store</button>
+  <button @click="logoutHandler">Logout</button>
 
   <h3>国际化</h3>
   <button @click="changeLocaleHandler('zh-CN')">中文</button>
@@ -17,6 +18,9 @@ import LocalStorageUtil from '@/utils/storage/LocalStorageUtil';
 import LocaleService from '@/locales/LocaleService';
 import { LocaleType } from '@/locales/LocaleTypes';
 import testStore from '@/views/testing/store.vue';
+import userStore from '@/store/modules/userStore';
+import { RoutePathEnum } from '@/router/RoutePathEnum';
+import RouterService from '@/router/RouterService';
 
 function testLocalStorageHandler() {
   console.log('\n============================begin test LocalStorage============================');
@@ -62,5 +66,10 @@ function changeLocaleHandler(val: string) {
 
 function testStoreHandler() {
   testStore();
+}
+
+function logoutHandler() {
+  userStore.updateToken(null);
+  RouterService.router.replace(RoutePathEnum.LOGIN);
 }
 </script>

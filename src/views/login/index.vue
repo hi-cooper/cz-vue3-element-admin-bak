@@ -9,9 +9,12 @@
 </template>
 
 <script setup lang="ts">
+import userStore from '@/store/modules/userStore';
 import RouterService from '@/router/RouterService';
+import { RoutePathEnum } from '@/router/RoutePathEnum';
 
 function loginHander() {
-  RouterService.router.replace('/dashboard');
+  userStore.updateToken('token_val');
+  RouterService.router.replace(RoutePathEnum.HOME);
 }
 </script>

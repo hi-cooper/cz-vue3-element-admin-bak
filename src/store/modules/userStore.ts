@@ -1,6 +1,3 @@
-// /src/store/modules/userStore.ts
-// 新建
-
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { store } from '../StoreService';
@@ -10,16 +7,27 @@ const useStore = defineStore('UserStore', () => {
   const openId = ref<string>('user_open_id');
   const nickname = ref<string>('user_nickname');
   const avatar = ref<string>('user_avatoar');
+  const token = ref<string | null>(null);
 
   // actions
-  function updateNickname(val: string) {
+  function updateNickname(val: string): void {
     nickname.value = val;
+  }
+
+  function updateToken(val: string | null): void {
+    token.value = val;
+  }
+
+  function isLogin(): boolean {
+    return token.value != null;
   }
 
   return {
     openId,
     nickname,
     avatar,
+    updateToken,
+    isLogin,
     updateNickname,
   };
 });
