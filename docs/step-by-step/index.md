@@ -1702,3 +1702,36 @@ import SvgIcon from '@/components/SvgIcon/index.vue';
 </script>
 ```
 
+# 15 vueuse
+
+> see: https://vueuse.org/
+
+## 15.1 安装
+
+```shell
+npm install @vueuse/core
+```
+
+## 15.2 示例
+
+```vue
+// /src/testing/index.vue
+// 添加
+
+<template>
+  <button @click="testVueuseStoregeHandler">test Vueuse Storege</button>
+</template>
+
+<script setup lang="ts">
+import { useStorage } from '@vueuse/core';
+
+function testVueuseStoregeHandler() {
+  console.log('\n============================begin test Vueuse Storege============================');
+  LocalStorageUtil.clear();
+  console.log('key[vueuse_test_a] = ', useStorage('vueuse_test_a', 'vueuse_test_a_value', localStorage).value);
+  console.log('============================end test Vueuse Storege============================');
+}
+</script>
+```
+
+![](https://czmdi.cooperzhu.com/technology/vue/vite3%2Bvue3%2Belement-plus%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAStep-by-Step/15-2_1.png)

@@ -1,6 +1,7 @@
 <template>
   <button @click="testLocalStorageHandler">Test localStorage</button>
   <button @click="testStoreHandler">Test Store</button>
+  <button @click="testVueuseStoregeHandler">test Vueuse Storege</button>
   <button @click="logoutHandler">Logout</button>
 
   <h3>国际化</h3>
@@ -31,6 +32,7 @@ import { RoutePathEnum } from '@/router/RoutePathEnum';
 import RouterService from '@/router/RouterService';
 import IconEpSunny from '~icons/ep/sunny';
 import SvgIcon from '@/components/SvgIcon/index.vue';
+import { useStorage } from '@vueuse/core';
 
 function testLocalStorageHandler() {
   console.log('\n============================begin test LocalStorage============================');
@@ -76,6 +78,13 @@ function changeLocaleHandler(val: string) {
 
 function testStoreHandler() {
   testStore();
+}
+
+function testVueuseStoregeHandler() {
+  console.log('\n============================begin test Vueuse Storege============================');
+  LocalStorageUtil.clear();
+  console.log('key[vueuse_test_a] = ', useStorage('vueuse_test_a', 'vueuse_test_a_value', localStorage).value);
+  console.log('============================end test Vueuse Storege============================');
 }
 
 function logoutHandler() {
