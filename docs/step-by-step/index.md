@@ -1446,3 +1446,75 @@ $text-color: #ffffff;
 </style>
 ```
 
+# 12 unocss
+
+> see: https://github.com/unocss/unocss
+
+## 12.1 安装
+
+```shell
+npm install -D unocss
+```
+
+## 12.2 配置
+
+- vite.config.ts
+
+```typescript
+// /vite.config.ts
+// 添加
+
+import UnoCSS from 'unocss/vite'
+
+export default defineConfig({
+  plugins: [
+    UnoCSS(),
+  ],
+})
+```
+
+- 新建规则定义文件uno.config.ts
+
+```typescript
+// /uno.config.ts
+// 新建
+
+import { defineConfig } from 'unocss';
+
+export default defineConfig({
+  rules: [], // 定义规则
+});
+```
+
+- 全局注册
+
+```typescript
+// /src/main.ts
+// 添加
+
+import 'virtual:uno.css'
+```
+
+## 12.3 示例
+
+- 定义规则
+
+```typescript
+// uno.config.ts
+// 添加
+
+export default defineConfig({
+  rules: [['p-5', { padding: '10px', color: '#FFFFFF', 'background-color': '#5c08f9' }]], // 定义规则
+});
+```
+
+- 页面引用
+
+```vue
+// /src/testing/index.vue
+// 添加
+
+<div class="p-5">unocss</div>
+```
+
+![](https://czmdi.cooperzhu.com/technology/vue/vite3%2Bvue3%2Belement-plus%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAStep-by-Step/12-3_1.png)

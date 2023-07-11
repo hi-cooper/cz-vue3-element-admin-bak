@@ -13,6 +13,7 @@
   </ul>
 
   <div id="idScss">SCSS</div>
+  <div class="p-5">unocss</div>
 </template>
 
 <script setup lang="ts">
