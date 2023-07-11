@@ -12,17 +12,21 @@
   },
   "dependencies": {
     "@types/lodash-es": "^4.17.7",
+    "fast-glob": "^3.3.0",
     "lodash-es": "^4.17.21",
     "pinia": "^2.1.4",
+    "vite-plugin-svg-icons": "^2.0.1",
     "vue": "^3.2.47",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.2.3"
   },
   "devDependencies": {
+    "@iconify/json": "^2.2.88",
     "@types/node": "^20.3.3",
     "@typescript-eslint/eslint-plugin": "^5.61.0",
     "@typescript-eslint/parser": "^5.61.0",
     "@vitejs/plugin-vue": "^4.1.0",
+    "@vue/compiler-sfc": "^3.3.4",
     "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
@@ -32,6 +36,7 @@
     "sass-loader": "^13.3.2",
     "typescript": "^5.0.2",
     "unocss": "^0.53.5",
+    "unplugin-icons": "^0.16.3",
     "vite": "^4.3.9",
     "vue-tsc": "^1.4.2"
   }

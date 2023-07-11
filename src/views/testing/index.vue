@@ -14,6 +14,11 @@
 
   <div id="idScss">SCSS</div>
   <div class="p-5">unocss</div>
+
+  <IconEpSunny />
+  <SvgIcon name="logo" color="#FF0000" />
+  <SvgIcon name="menu-dict" color="#FF0000" />
+  <SvgIcon name="basic-language" color="#FF0000" />
 </template>
 
 <script setup lang="ts">
@@ -24,6 +29,8 @@ import testStore from '@/views/testing/store.vue';
 import userStore from '@/store/modules/userStore';
 import { RoutePathEnum } from '@/router/RoutePathEnum';
 import RouterService from '@/router/RouterService';
+import IconEpSunny from '~icons/ep/sunny';
+import SvgIcon from '@/components/SvgIcon/index.vue';
 
 function testLocalStorageHandler() {
   console.log('\n============================begin test LocalStorage============================');

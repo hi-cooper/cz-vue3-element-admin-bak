@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 import './style.css';
 import 'virtual:uno.css';
 import 'virtual:uno.css';
+import 'virtual:svg-icons-register';
 import App from './App.vue';
 import LocaleService from '@/locales/LocaleService';
 import StoreService from '@/store/StoreService';

@@ -23,7 +23,11 @@
     "paths": { //路径映射，相对于baseUrl
       "@/*": ["src/*"] 
     },
-    "allowSyntheticDefaultImports": true // 允许默认导入
+    "allowSyntheticDefaultImports": true, // 允许默认导入
+    "types": [
+      "unplugin-icons/types/vue",
+      "vite-plugin-svg-icons/client",
+    ]
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
   "references": [{ "path": "./tsconfig.node.json" }]

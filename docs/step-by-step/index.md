@@ -1518,3 +1518,187 @@ export default defineConfig({
 ```
 
 ![](https://czmdi.cooperzhu.com/technology/vue/vite3%2Bvue3%2Belement-plus%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAStep-by-Step/12-3_1.png)
+
+# 13 icon (unplugin-icons)
+
+> see: https://github.com/antfu/unplugin-icons
+
+## 13.1 安装
+
+```shell
+npm install -D unplugin-icons
+npm install -D @iconify/json
+npm install -D @vue/compiler-sfc
+```
+
+## 13.2 配置
+
+- vite.config.ts
+
+```typescript
+// /vite.config.ts
+// 添加
+
+import Icons from 'unplugin-icons/vite'
+
+export default defineConfig({
+  plugins: [
+    Icons({ compiler: 'vue3' })
+  ],
+})
+```
+
+- tsconfig.json
+
+```json
+// /tsconfig.json
+// 添加
+
+{
+  "compilerOptions": {
+    "types": [
+      "unplugin-icons/types/vue",
+    ]
+  }
+}
+```
+
+## 13.3 示例
+
+```vue
+// /src/testing/index.vue
+// 添加
+
+<template>
+  <IconEpSunny />
+</template>
+
+<script setup lang="ts">
+import IconEpSunny from '~icons/ep/sunny';
+</script>
+```
+
+# 14 自定义SVG组件 (vite-plugin-svg-icons)
+
+> see; https://github.com/vbenjs/vite-plugin-svg-icons
+
+## 14.1 安装
+
+```shell
+npm install fast-glob
+npm install vite-plugin-svg-icons
+```
+
+## 14.2 配置
+
+- 创建svg文件存放路径：`src/assets/icons`
+
+- vite.config.ts
+
+```typescript
+// /vite.config.ts
+// 添加
+
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
+
+export default () => {
+  return {
+    plugins: [
+      createSvgIconsPlugin({
+        iconDirs: [path.resolve(process.cwd(), 'src/assets/icons')], // 指定icons路径
+        symbolId: 'icon-[dir]-[name]', // symbolId格式
+      }),
+    ],
+  };
+};
+```
+
+- tsconfig.json
+
+```json
+// /tsconfig.json
+// 添加
+
+{
+  "compilerOptions": {
+    "types": ["vite-plugin-svg-icons/client"]
+  },
+}
+```
+
+- 全局注册
+
+```typescript
+// /src/main.ts
+
+import 'virtual:svg-icons-register';
+```
+
+- 组件声明
+
+```vue
+// /src/components/SvgIcon/index.vue
+// 新建
+
+<template>
+  <svg aria-hidden="true" class="svg-icon" :style="'width:' + size + ';height:' + size">
+    <use :xlink:href="symbolId" :fill="color" />
+  </svg>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue';
+
+const props = defineProps({
+  prefix: {
+    type: String,
+    default: 'icon',
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  color: {
+    type: String,
+    required: false,
+  },
+  size: {
+    type: String,
+    default: '1em',
+  },
+});
+
+const symbolId = computed(() => `#${props.prefix}-${props.name}`);
+</script>
+
+<style scoped>
+.svg-icon {
+  overflow: hidden;
+  fill: currentColor;
+}
+</style>
+```
+
+## 14.3 示例
+
+- 上传svg至`/src/assets/icons`
+
+![](https://czmdi.cooperzhu.com/technology/vue/vite3%2Bvue3%2Belement-plus%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAStep-by-Step/14-3_1.png)
+
+- 页面引用
+
+```vue
+// /src/testing/index.vue
+// 添加
+
+<template>
+  <SvgIcon name="logo" color="#FF0000" />
+  <SvgIcon name="menu-dict" color="#FF0000" />
+  <SvgIcon name="basic-language" color="#FF0000" />
+</template>
+
+<script setup lang="ts">
+import SvgIcon from '@/components/SvgIcon/index.vue';
+</script>
+```
+
