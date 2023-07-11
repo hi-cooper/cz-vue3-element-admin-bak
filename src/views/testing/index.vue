@@ -11,6 +11,8 @@
     <li>{{ $t('routes.router.system.userManagement') }}</li>
     <li>{{ $t('routes.router.login') }}</li>
   </ul>
+
+  <div id="idScss">SCSS</div>
 </template>
 
 <script setup lang="ts">
@@ -73,3 +75,12 @@ function logoutHandler() {
   RouterService.router.replace(RoutePathEnum.LOGIN);
 }
 </script>
+
+<style lang="scss" scoped>
+#idScss {
+  width: 100%;
+  height: 50px;
+  background-color: $background-color;
+  color: $text-color;
+}
+</style>

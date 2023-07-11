@@ -11,4 +11,14 @@ export default defineConfig({
       'vue-i18n': 'vue-i18n/dist/vue-i18n.cjs.js',
     },
   },
+  css: {
+    // CSS 预处理器
+    preprocessorOptions: {
+      //define global scss variable
+      scss: {
+        javascriptEnabled: true,
+        additionalData: `@use "@/layouts/scss/global.scss" as *;`, // 默认scss文件
+      },
+    },
+  },
 });
