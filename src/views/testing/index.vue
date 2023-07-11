@@ -20,6 +20,7 @@
   <SvgIcon name="logo" color="#FF0000" />
   <SvgIcon name="menu-dict" color="#FF0000" />
   <SvgIcon name="basic-language" color="#FF0000" />
+  <el-button type="primary" :icon="Edit" circle></el-button>
 </template>
 
 <script setup lang="ts">
@@ -33,6 +34,7 @@ import RouterService from '@/router/RouterService';
 import IconEpSunny from '~icons/ep/sunny';
 import SvgIcon from '@/components/SvgIcon/index.vue';
 import { useStorage } from '@vueuse/core';
+import { Edit } from '@element-plus/icons-vue';
 
 function testLocalStorageHandler() {
   console.log('\n============================begin test LocalStorage============================');

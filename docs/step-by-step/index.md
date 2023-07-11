@@ -1735,3 +1735,75 @@ function testVueuseStoregeHandler() {
 ```
 
 ![](https://czmdi.cooperzhu.com/technology/vue/vite3%2Bvue3%2Belement-plus%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BAStep-by-Step/15-2_1.png)
+
+# 16 element-plus
+
+> see: https://element-plus.org/zh-CN/
+
+## 16.1 安装
+
+```shell
+npm install element-plus
+```
+
+## 16.2 配置
+
+- tsconfig.json
+
+```json
+// /tsconfig.json
+// 添加
+
+{
+  "compilerOptions": {
+    "types": ["element-plus/global"]
+  },
+}
+```
+
+- ComponetService.ts
+
+```typescript
+// /src/components/ComponetService.ts
+// 新建
+
+import type { App } from 'vue';
+import ElementPlus from 'element-plus';
+
+const ComponetService = {
+  setupGlobalComponent(app: App) {
+    app.use(ElementPlus);
+  },
+};
+export default ComponetService;
+```
+
+- 全局注册
+
+```typescript
+// /src/main.ts
+// 添加
+
+import 'element-plus/theme-chalk/index.css';
+import ComponetService from '@/components/ComponetService';
+
+async function bootstrap() {
+  ComponetService.setupGlobalComponent(app);
+}
+```
+
+## 16.3 示例
+
+```vue
+// /src/testing/index.vue
+// 添加
+
+<script setup lang="ts">
+import { Edit } from '@element-plus/icons-vue'
+</script>
+
+<template>
+  <el-button type="primary" :icon="Edit" circle></el-button>
+</template>
+```
+

@@ -13,6 +13,7 @@
   "dependencies": {
     "@types/lodash-es": "^4.17.7",
     "@vueuse/core": "^10.2.1",
+    "element-plus": "^2.3.7",
     "fast-glob": "^3.3.0",
     "lodash-es": "^4.17.21",
     "pinia": "^2.1.4",

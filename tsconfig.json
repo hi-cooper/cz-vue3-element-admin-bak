@@ -27,6 +27,7 @@
     "types": [
       "unplugin-icons/types/vue",
       "vite-plugin-svg-icons/client",
+      "element-plus/global",
     ]
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
