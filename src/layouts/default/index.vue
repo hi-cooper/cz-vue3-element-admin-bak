@@ -1,29 +1,120 @@
+<script setup lang="ts">
+import { computed, watchEffect } from 'vue';
+import { useWindowSize } from '@vueuse/core';
+import { AppMain, Navbar, Settings, TagsView } from './components/index';
+import Sidebar from './components/Sidebar/index.vue';
+import RightPanel from '@/components/RightPanel/index.vue';
+
+import appStore from '@/store/modules/appStore';
+import settingStore from '@/store/modules/settingStore';
+
+const { width } = useWindowSize();
+
+/**
+ * 响应式布局容器固定宽度
+ *
+ * 大屏（>=1200px）
+ * 中屏（>=992px）
+ * 小屏（>=768px）
+ */
+const WIDTH = 992;
+
+const fixedHeader = computed(() => settingStore.fixedHeader);
+const showTagsView = computed(() => settingStore.tagsView);
+const showSettings = computed(() => settingStore.showSettings);
+
+const classObj = computed(() => ({
+  hideSidebar: !appStore.sidebar.opened,
+  openSidebar: appStore.sidebar.opened,
+  withoutAnimation: appStore.sidebar.withoutAnimation,
+  mobile: appStore.device === 'mobile',
+}));
+
+watchEffect(() => {
+  if (width.value < WIDTH) {
+    appStore.toggleDevice('mobile');
+    appStore.closeSideBar(true);
+  } else {
+    appStore.toggleDevice('desktop');
+
+    if (width.value >= 1200) {
+      //大屏
+      appStore.openSideBar(true);
+    } else {
+      appStore.closeSideBar(true);
+    }
+  }
+});
+
+function handleOutsideClick() {
+  appStore.closeSideBar(false);
+}
+</script>
+
 <template>
-  <div id="header">Header</div>
-  <div id="main">
-    <RouterView />
+  <div :class="classObj" class="app-wrapper">
+    <!-- 手机设备侧边栏打开遮罩层 -->
+    <div v-if="classObj.mobile && classObj.openSidebar" class="drawer-bg" @click="handleOutsideClick"></div>
+
+    <Sidebar class="sidebar-container" />
+
+    <div :class="{ hasTagsView: showTagsView }" class="main-container">
+      <div :class="{ 'fixed-header': fixedHeader }">
+        <navbar />
+        <TagsView v-if="showTagsView" />
+      </div>
+      <AppMain />
+
+      <!-- 设置面板 -->
+      <RightPanel v-if="showSettings">
+        <settings />
+      </RightPanel>
+    </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { RouterView } from 'vue-router';
-</script>
+<style lang="scss" scoped>
+.app-wrapper {
+  &::after {
+    display: table;
+    clear: both;
+    content: '';
+  }
 
-<style scoped>
-html,
-body {
+  position: relative;
   width: 100%;
   height: 100%;
-  padding: 0;
-  margin: 0;
+
+  &.mobile.openSidebar {
+    position: fixed;
+    top: 0;
+  }
 }
-#header {
-  width: 100%;
-  height: 80px;
-  background-color: aqua;
+
+.fixed-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 9;
+  width: calc(100% - #{$sideBarWidth});
+  transition: width 0.28s;
 }
-#main {
+
+.hideSidebar .fixed-header {
+  width: calc(100% - 54px);
+}
+
+.mobile .fixed-header {
   width: 100%;
-  height: max-content;
+}
+
+.drawer-bg {
+  position: absolute;
+  top: 0;
+  z-index: 999;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  opacity: 0.3;
 }
 </style>

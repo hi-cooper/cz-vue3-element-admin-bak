@@ -1,6 +1,8 @@
 <template>
-  <h1>Dashboard</h1>
-  <Testing />
+  <div>
+    <h1>Dashboard</h1>
+    <Testing />
+  </div>
 </template>
 
 <script setup lang="ts">

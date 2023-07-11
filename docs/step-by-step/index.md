@@ -1807,3 +1807,23 @@ import { Edit } from '@element-plus/icons-vue'
 </template>
 ```
 
+# 17 后台管理首页布局优化
+
+## 17.1 安装
+
+```shell
+npm install path-browserify
+npm install path-to-regexp
+```
+
+## 17.2 配置
+
+- 声明module
+
+```typescript
+// /src/vite-env.d.ts
+// 添加
+
+declare module 'path-browserify'
+```
+

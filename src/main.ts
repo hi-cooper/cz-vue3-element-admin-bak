@@ -1,9 +1,8 @@
 import { createApp } from 'vue';
-import 'element-plus/theme-chalk/index.css';
-import './style.css';
-import 'virtual:uno.css';
 import 'virtual:uno.css';
 import 'virtual:svg-icons-register';
+import 'element-plus/theme-chalk/index.css';
+import '@/layouts/scss/index.scss';
 import App from './App.vue';
 import LocaleService from '@/locales/LocaleService';
 import StoreService from '@/store/StoreService';

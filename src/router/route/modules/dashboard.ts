@@ -20,6 +20,7 @@ const dashboard: IRoute = {
       meta: {
         // affix: true,
         title: 'Dashboarddddd',
+        affix: true,
       },
     },
   ],

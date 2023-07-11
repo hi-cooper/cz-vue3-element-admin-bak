@@ -16,6 +16,8 @@
     "element-plus": "^2.3.7",
     "fast-glob": "^3.3.0",
     "lodash-es": "^4.17.21",
+    "path-browserify": "^1.0.1",
+    "path-to-regexp": "^6.2.1",
     "pinia": "^2.1.4",
     "vite-plugin-svg-icons": "^2.0.1",
     "vue": "^3.2.47",
