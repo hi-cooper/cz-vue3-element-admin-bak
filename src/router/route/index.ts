@@ -1,34 +1,33 @@
 import type { IRoute } from './RouteTypes';
-import { mainOutRoutes } from './mainOut';
 
 const modules = import.meta.glob<Record<string, unknown>>('./modules/**/*.ts', { eager: true });
-const routeModuleList: IRoute[] = [];
+const allRoutes: IRoute[] = [];
+const allFlatRoutes: IRoute[] = [];
+const allRoutesMap = new Map<string, IRoute>();
+const allMenuRoutes: IRoute[] = [];
 
 Object.keys(modules).forEach((key) => {
-  const mod = modules[key].default || {};
+  const mod = modules[key].default || {}; // 仅支持export default
   const modList = Array.isArray(mod) ? [...mod] : [mod];
-  routeModuleList.push(...modList);
+  allRoutes.push(...modList);
+  if ('./modules/sidebarMenu.ts' === key) {
+    allMenuRoutes.push(...modList);
+  }
 });
 
-export const asyncRoutes = [...routeModuleList];
+function initAllRoutesMap(routes: IRoute[]) {
+  routes.forEach((route) => {
+    allRoutesMap.set(route.id, route);
+    allFlatRoutes.push(route);
+    if (route.children) {
+      initAllRoutesMap(route.children);
+    }
+  });
+}
 
-export const ROUTE_HOME: IRoute = {
-  path: '/',
-  name: 'Home',
-  redirect: '/dashboard',
-  meta: {
-    title: 'Home',
-  },
-};
+initAllRoutesMap(allRoutes);
+console.log('allRoutes', allRoutes);
+console.log('allRoutesMap', allRoutesMap.values());
 
-export const ROUTE_LOGIN: IRoute = {
-  path: '/login',
-  name: 'Login',
-  component: () => import('@/views/login/index.vue'),
-  meta: {
-    title: 'routes.basic.login',
-  },
-};
-
-// Basic routing without permission
-export const baseiRoute = [ROUTE_HOME, ROUTE_LOGIN, ...mainOutRoutes, ...routeModuleList];
+export { allRoutes, allFlatRoutes, allRoutesMap, allMenuRoutes };
+export default allRoutes;

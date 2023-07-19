@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import path from 'path-browserify';
 import DomUtil from '@/utils/basic/DomUtil';
-import AppLink from './Link.vue';
+import AppLink from './AppLink.vue';
 import SvgIcon from '@/components/SvgIcon/index.vue';
 import { ref } from 'vue';
+import permissionStore from '@/store/modules/permissionStore';
 
 const props = defineProps({
   /**
@@ -18,7 +19,7 @@ const props = defineProps({
    * 父层级完整路由路径(eg:/level/level_3/level_3_1)
    */
   basePath: {
-    type: String,
+    type: String, // IRoute
     required: true,
   },
 });
@@ -74,29 +75,34 @@ function resolvePath(routePath: string) {
   const fullPath = path.resolve(props.basePath, routePath); // 相对路径 → 绝对路径
   return fullPath;
 }
+
+function isGranted(item: any): boolean {
+  return permissionStore.getGrandtedIds().includes(item.id);
+}
 </script>
+
 <template>
-  <div v-if="!item.meta || !item.meta.hidden">
+  <div v-if="!item.meta || isGranted(item)">
     <!-- 只包含一个子路由节点的路由，显示其【唯一子路由】 -->
     <template v-if="hasOneShowingChild(item.children, item) && (!onlyOneChild.children || onlyOneChild.noShowingChildren)">
-      <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
-        <el-menu-item :index="resolvePath(onlyOneChild.path)">
-          <svg-icon v-if="onlyOneChild.meta && onlyOneChild.meta.icon" :name="onlyOneChild.meta.icon" />
+      <AppLink v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
+        <ElMenuItem :index="resolvePath(onlyOneChild.path)">
+          <SvgIcon v-if="onlyOneChild.meta && onlyOneChild.meta.icon" :name="onlyOneChild.meta.icon" />
           <template #title>
             {{ onlyOneChild.meta.title }}
           </template>
-        </el-menu-item>
-      </app-link>
+        </ElMenuItem>
+      </AppLink>
     </template>
 
     <!-- 包含多个子路由  -->
-    <el-sub-menu v-else :index="resolvePath(item.path)" teleported>
+    <ElSubMenu v-else :index="resolvePath(item.path)" teleported>
       <template #title>
-        <svg-icon v-if="item.meta && item.meta.icon" :name="item.meta.icon" />
+        <SvgIcon v-if="item.meta && item.meta.icon" :name="item.meta.icon" />
         <span v-if="item.meta && item.meta.title">{{ item.meta.title }}</span>
       </template>
 
-      <sidebar-item v-for="child in item.children" :key="child.path" :item="child" :base-path="resolvePath(child.path)" />
-    </el-sub-menu>
+      <SidebarItem v-for="child in item.children" :key="child.path" :item="child" :base-path="resolvePath(child.path)" />
+    </ElSubMenu>
   </div>
 </template>

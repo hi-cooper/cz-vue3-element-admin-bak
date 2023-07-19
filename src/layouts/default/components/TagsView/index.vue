@@ -6,11 +6,12 @@ import path from 'path-browserify';
 
 import { useRoute, useRouter } from 'vue-router';
 
-import permissionStore from '@/store/modules/permissionStore';
 import tagsViewStore, { TagView } from '@/store/modules/tagViewStore';
 import ScrollPane from './ScrollPane.vue';
 import SvgIcon from '@/components/SvgIcon/index.vue';
 import IEpClose from '~icons/ep/close';
+import { allFlatRoutes } from '@/router/route';
+import { IRoute } from '@/router/route/RouteTypes';
 
 const { proxy } = getCurrentInstance() as ComponentInternalInstance;
 const router = useRouter();
@@ -44,7 +45,7 @@ watch(tagMenuVisible, (value) => {
   }
 });
 
-function filterAffixTags(routes: any[], basePath = '/') {
+function filterAffixTags(routes: IRoute[], basePath = '/') {
   let tags: TagView[] = [];
 
   routes.forEach((route) => {
@@ -69,7 +70,7 @@ function filterAffixTags(routes: any[], basePath = '/') {
 }
 
 function initTags() {
-  const tags: TagView[] = filterAffixTags(permissionStore.allRoutes);
+  const tags: TagView[] = filterAffixTags(allFlatRoutes);
   affixTags.value = tags;
   for (const tag of tags) {
     // Must have tag name
@@ -221,8 +222,8 @@ onMounted(() => {
 
 <template>
   <div class="tags-container">
-    <scroll-pane ref="scrollPaneRef" @scroll="handleScroll">
-      <router-link
+    <ScrollPane ref="scrollPaneRef" @scroll="handleScroll">
+      <RouterLink
         v-for="tag in visitedViews"
         :key="tag.path"
         :class="'tags-item ' + (isActive(tag) ? 'active' : '')"
@@ -235,8 +236,8 @@ onMounted(() => {
         <span v-if="!isAffix(tag)" class="tags-item-close" @click.prevent.stop="closeSelectedTag(tag)">
           <IEpClose class="text-[10px]" />
         </span>
-      </router-link>
-    </scroll-pane>
+      </RouterLink>
+    </ScrollPane>
 
     <!-- tag标签操作菜单 -->
     <ul v-show="tagMenuVisible" class="tag-menu" :style="{ left: left + 'px', top: top + 'px' }">

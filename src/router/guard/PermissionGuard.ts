@@ -1,13 +1,12 @@
 import type { Router } from 'vue-router';
 import { userStoreHook } from '@/store/modules/userStore';
 import { RoutePathEnum } from '../RoutePathEnum';
-
-const whiteList: RoutePathEnum[] = [RoutePathEnum.LOGIN];
+import RouterService from '../RouterService';
 
 function setup(router: Router) {
   router.beforeEach(async (to, from, next) => {
     // 目标地址为白名单地址
-    if (whiteList.includes(to.path as RoutePathEnum)) {
+    if (RouterService.isWhiteList(to.path as RoutePathEnum)) {
       next();
       return;
     }

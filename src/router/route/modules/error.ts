@@ -1,8 +1,8 @@
-import type { IRoute } from './RouteTypes';
+import type { IRoute } from '../RouteTypes';
 
 const ROUTE_ERROR_401: IRoute = {
+  id: 'RES_ERROR_401',
   path: '/401',
-  name: '401 Unauthorized',
   component: () => import('@/views/error/401.vue'),
   meta: {
     hideChildrenInMenu: true,
@@ -13,15 +13,15 @@ const ROUTE_ERROR_401: IRoute = {
 };
 
 const ROUTE_ERROR_500: IRoute = {
+  id: 'RES_ERROR_500',
   path: '/500',
-  name: '500 Internal Server Error',
   component: () => import('@/views/error/500.vue'),
   meta: {
+    title: '500 Internal Server Error',
     hideChildrenInMenu: true,
     icon: 'simple-icons:about-dot-me',
-    title: '500 Internal Server Error',
     orderNo: 100000,
   },
 };
 
-export { ROUTE_ERROR_401, ROUTE_ERROR_500 };
+export default [ROUTE_ERROR_401, ROUTE_ERROR_500];

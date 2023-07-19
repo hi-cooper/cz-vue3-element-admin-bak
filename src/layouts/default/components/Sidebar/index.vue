@@ -7,7 +7,7 @@ import settingStore from '@/store/modules/settingStore';
 import appStore from '@/store/modules/appStore';
 import { storeToRefs } from 'pinia';
 import variables from '@/layouts/scss/variables.module.scss';
-import permissionStore from '@/store/modules/permissionStore';
+import { allMenuRoutes } from '@/router/route';
 
 const currRoute = useRoute();
 const { sidebarLogo } = storeToRefs(settingStore);
@@ -15,9 +15,9 @@ const { sidebarLogo } = storeToRefs(settingStore);
 
 <template>
   <div :class="{ 'has-logo': sidebarLogo }">
-    <logo v-if="sidebarLogo" :collapse="!appStore.sidebar.opened" />
-    <el-scrollbar>
-      <el-menu
+    <Logo v-if="sidebarLogo" :collapse="!appStore.sidebar.opened" />
+    <ElScrollbar>
+      <ElMenu
         :default-active="currRoute.path"
         :collapse="!appStore.sidebar.opened"
         :background-color="variables.menuBg"
@@ -27,8 +27,8 @@ const { sidebarLogo } = storeToRefs(settingStore);
         :collapse-transition="false"
         mode="vertical"
       >
-        <sidebar-item v-for="route in permissionStore.menuRoutes" :key="route.path" :item="route" :base-path="route.path" :is-collapse="!appStore.sidebar.opened" />
-      </el-menu>
-    </el-scrollbar>
+        <SidebarItem v-for="route in allMenuRoutes" :key="route.path" :item="route" :base-path="route.path" :is-collapse="!appStore.sidebar.opened" />
+      </ElMenu>
+    </ElScrollbar>
   </div>
 </template>
